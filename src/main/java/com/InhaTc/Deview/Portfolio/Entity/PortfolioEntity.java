@@ -21,11 +21,15 @@ public class PortfolioEntity {
 
     private String title;
 
-    private String user;
+    private String userId;
 
+    @Column(columnDefinition = "TEXT")
     private String summary;
 
+    @Column(columnDefinition = "TEXT")
     private String content;
 
-    private int view;
+    private String tags;
+
+    private long view;
 }

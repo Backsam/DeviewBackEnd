@@ -4,6 +4,7 @@ import com.InhaTc.Deview.User.Entitiy.UserEntity;
 import com.InhaTc.Deview.User.Repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -27,7 +28,13 @@ public class UserService {
         return userRepository.save(userEntity);
     }
 
-    public UserEntity getByCredentials(final String username, final String password){
-        return userRepository.findByUserIdAndPassword(username, password);
+    //로그인
+    public UserEntity getByCredentials(final String userId, final String password, final PasswordEncoder encoder){
+        final UserEntity originalUser = userRepository.findByUserId(userId);
+
+        if(originalUser != null && encoder.matches(password, originalUser.getPassword())){
+            return originalUser;
+        }
+        return null;
     }
 }

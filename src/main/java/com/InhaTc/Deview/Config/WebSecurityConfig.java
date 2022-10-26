@@ -32,7 +32,7 @@ public class WebSecurityConfig{
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)        //세션기반 아님 선언
                 .and()
                 .authorizeRequests()
-                    .antMatchers("/**", "/user/**").permitAll()           //위 링크는 인증 x
+                    .antMatchers("/portfolio/**", "/user/**").permitAll()           //위 링크는 인증 x
                 .anyRequest()
                     .authenticated();                                             //나머지 링크는 인증
 

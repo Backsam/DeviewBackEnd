@@ -8,6 +8,8 @@ import com.InhaTc.Deview.User.Service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -24,6 +26,8 @@ public class UserController {
     @Autowired
     private TokenProvider tokenProvider;
 
+    private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     @PostMapping("/signup")
     public ResponseEntity<?> resisterUser(@RequestBody UserDTO userDTO){
         try{
@@ -33,7 +37,7 @@ public class UserController {
 
             UserEntity user = UserEntity.builder()
                     .userId(userDTO.getUserId())
-                    .password(userDTO.getPassword())
+                    .password(passwordEncoder.encode(userDTO.getPassword()))
                     .role(userDTO.getRole())
                     .build();
 
@@ -51,7 +55,7 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> signIn(@RequestBody UserDTO userDTO){
-        UserEntity user = userService.getByCredentials(userDTO.getUserId(), userDTO.getPassword());
+        UserEntity user = userService.getByCredentials(userDTO.getUserId(), userDTO.getPassword(), passwordEncoder);
 
         if(user != null){
             final String token = tokenProvider.create(user);
@@ -65,7 +69,6 @@ public class UserController {
             ResponseDTO responseDTO = ResponseDTO.builder()
                     .error("Login error")
                     .build();
-
             return ResponseEntity.badRequest().body(responseDTO);
         }
     }

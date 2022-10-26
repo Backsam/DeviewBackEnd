@@ -11,27 +11,46 @@ import lombok.NoArgsConstructor;
 public class PortfolioDTO {
     private Long pfId;
     private String title;
-    private String user;
+    private String userId;
     private String summary;
     private String content;
-    private int view;
+
+    private String tags;
+    private long view;
 
     public PortfolioDTO(final PortfolioEntity entity){
         this.pfId = entity.getPfId();
         this.title = entity.getTitle();
-        this.user = entity.getUser();
+        this.userId = entity.getUserId();
         this.summary = entity.getSummary();
+        this.tags = entity.getTags();
         this.content = entity.getContent();
         this.view = entity.getView();
     }
 
+
+
     public static PortfolioEntity toEntity(final PortfolioDTO dto){
-        return PortfolioEntity.builder()
-                .title(dto.getTitle())
-                .user(dto.getUser())
-                .summary(dto.getSummary())
-                .content(dto.getContent())
-                .view(dto.getView())
-                .build();
+
+        if(dto.getPfId() == null){
+            return PortfolioEntity.builder()
+                    .title(dto.getTitle())
+                    .userId(dto.getUserId())
+                    .summary(dto.getSummary())
+                    .content(dto.getContent())
+                    .tags(dto.getTags())
+                    .view(dto.getView())
+                    .build();
+        }else{
+            return PortfolioEntity.builder()
+                    .pfId(dto.getPfId())
+                    .title(dto.getTitle())
+                    .userId(dto.getUserId())
+                    .summary(dto.getSummary())
+                    .content(dto.getContent())
+                    .tags(dto.getTags())
+                    .view(dto.getView())
+                    .build();
+        }
     }
 }
