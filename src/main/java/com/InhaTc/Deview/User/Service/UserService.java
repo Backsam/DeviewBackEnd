@@ -1,5 +1,6 @@
 package com.InhaTc.Deview.User.Service;
 
+import com.InhaTc.Deview.Profile.Service.ProfileService;
 import com.InhaTc.Deview.User.Entitiy.UserEntity;
 import com.InhaTc.Deview.User.Repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +14,8 @@ public class UserService {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ProfileService profileService;
 
     //회원가입
     public UserEntity create(final UserEntity userEntity){
@@ -25,7 +28,10 @@ public class UserService {
             throw new RuntimeException("Username already exist");
         }
 
-        return userRepository.save(userEntity);
+        UserEntity user = userRepository.save(userEntity);
+        profileService.createProfile(user);
+        return user;
+
     }
 
     //로그인

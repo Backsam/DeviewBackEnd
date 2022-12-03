@@ -2,6 +2,7 @@ package com.InhaTc.Deview.Config;
 
 
 import com.InhaTc.Deview.Security.JwtAuthenticationFilter;
+import com.InhaTc.Deview.User.Constant.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
@@ -32,7 +33,8 @@ public class WebSecurityConfig{
                     .sessionCreationPolicy(SessionCreationPolicy.STATELESS)        //세션기반 아님 선언
                 .and()
                 .authorizeRequests()
-                    .antMatchers("/portfolio/**", "/user/**").permitAll()           //위 링크는 인증 x
+                    .antMatchers("/**").permitAll()                     //인증  x
+                    .antMatchers("/portfolio/write").hasRole(String.valueOf(UserRole.DEVELOPER))
                 .anyRequest()
                     .authenticated();                                             //나머지 링크는 인증
 

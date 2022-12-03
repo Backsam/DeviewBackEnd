@@ -2,12 +2,14 @@ package com.InhaTc.Deview.User.Controller;
 
 import com.InhaTc.Deview.DTO.ResponseDTO;
 import com.InhaTc.Deview.Security.TokenProvider;
+import com.InhaTc.Deview.User.Constant.UserRole;
 import com.InhaTc.Deview.User.DTO.UserDTO;
 import com.InhaTc.Deview.User.Entitiy.UserEntity;
 import com.InhaTc.Deview.User.Service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,10 +40,11 @@ public class UserController {
             UserEntity user = UserEntity.builder()
                     .userId(userDTO.getUserId())
                     .password(passwordEncoder.encode(userDTO.getPassword()))
-                    .role(userDTO.getRole())
+                    .role(UserRole.valueOf(userDTO.getRole()))
                     .build();
 
             UserEntity resisteredUser = userService.create(user);
+
             UserDTO responseUserDTO = UserDTO.builder()
                     .id(resisteredUser.getUuid())
                     .userId(resisteredUser.getUserId())
@@ -62,6 +65,7 @@ public class UserController {
             final UserDTO responseUserDTO = UserDTO.builder()
                     .userId(user.getUserId())
                     .id(user.getUuid())
+                    .role(user.getRole().toString())
                     .token(token)
                     .build();
             return ResponseEntity.ok().body(responseUserDTO);

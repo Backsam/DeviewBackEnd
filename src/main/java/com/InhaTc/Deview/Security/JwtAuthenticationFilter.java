@@ -7,6 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -25,6 +26,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Autowired
     private TokenProvider tokenProvider;
 
+    @Autowired
+    private CustomUserDetailsService customUserDetailsService;
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {
@@ -35,12 +39,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (token != null && !token.equalsIgnoreCase("null")) {
                 // userId 가져오기. 위조 된 경우 예외 처리 된다.
                 String userId = tokenProvider.validateAndGetUserId(token);
+                UserDetails userDetails = customUserDetailsService.loadUserByUsername(userId);
                 log.info("Authenticated user ID : " + userId );
                 // 인증 완료; SecurityContextHolder에 등록해야 인증된 사용자라고 생각한다.
-                AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
-                        userId, // 인증된 사용자의 정보. 문자열이 아니어도 아무거나 넣을 수 있다. 보통 UserDetails라는 오브젝트를 넣는데, 우리는 안 만들었음.
-                        null, //
-                        AuthorityUtils.NO_AUTHORITIES
+                    AbstractAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities()
                 );
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
